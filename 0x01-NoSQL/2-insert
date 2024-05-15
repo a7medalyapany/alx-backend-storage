@@ -1,1 +1,2 @@
+// insert a document in the collection school with the name Holberton school
 db.school.insert({ name: "Holberton school" });
