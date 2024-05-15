@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+mongo <<EOF
+use my_db
+EOF
