@@ -1,1 +1,2 @@
+// Uses or creates database.
 use my_db;
