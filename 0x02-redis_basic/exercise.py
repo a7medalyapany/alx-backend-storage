@@ -5,6 +5,24 @@ Module for Exercise.
 import redis
 import uuid
 from typing import Union, Optional, Callable
+from functools import wraps
+
+
+def count_calls(method: Callable) -> Callable:
+    """
+    Decorator to count how many times methods of the Cache class are called.
+    """
+    key = method.__qualname__
+
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """
+        Wrapper function for the decorator.
+        """
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+
+    return wrapper
 
 
 class Cache:
@@ -19,6 +37,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Store the input data in Redis using a random key.
@@ -34,18 +53,4 @@ class Cache:
         result = self._redis.get(key)
         if fn:
             result = fn(result)
-        return result
-
-    def get_str(self, key: str) -> str:
-        """
-        Get the value of a string key from the Redis server and convert it to a string.
-        """
-        result = self.get(key, fn=str)
-        return result
-
-    def get_int(self, key: str) -> int:
-        """
-        Get the value of a string key from the Redis server and convert it to an integer.
-        """
-        result = self.get(key, fn=int)
         return result
