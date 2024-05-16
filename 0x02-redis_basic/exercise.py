@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-'''
-Main file
-'''
-import redis
+''' Main module for the Task'''
 import uuid
+import redis
 
 
 class Cache:
