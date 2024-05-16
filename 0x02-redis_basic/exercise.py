@@ -1,38 +1,51 @@
 #!/usr/bin/env python3
-'''Main module for the Task'''
-import uuid
+"""
+Module for Exercise.
+"""
 import redis
+import uuid
+from typing import Union, Optional, Callable
 
 
 class Cache:
-    '''Cache class to store data in Redis'''
+    """
+    Cache class. Implements caching functions with a Redis client.
+    """
 
-    def __init__(self, host='localhost', port='5332', db=0) -> None:
-        '''Initialize the Cache class with Redis client'''
-        self._redis = redis.Redis(host=host, port=port, db=db)
+    def __init__(self):
+        """
+        Initialize the Cache class.
+        """
+        self._redis = redis.Redis()
         self._redis.flushdb()
 
-    @call_history
-    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
-        '''Store the input data in Redis using a random key and return the key'''
-        data_key = str(uuid.uuid4())
-        self._redis.set(data_key, data)
-        return data_key
+        """
+        Store the input data in Redis using a random key.
+        """
+        key = str(uuid.uuid4())
+        self._redis.set(key, data)
+        return key
 
-    def get(
-            self,
-            key: str,
-            fn: Callable = None,
-    ) -> Union[str, bytes, int, float]:
-        '''Gets a value'''
-        data = self._redis.get(key)
-        return fn(data) if fn is not None else data
+    def get(self, key: str, fn: Optional[Callable] = None) -> Union[str, bytes, int, float]:
+        """
+        Get the value of a string key from the Redis server.
+        """
+        result = self._redis.get(key)
+        if fn:
+            result = fn(result)
+        return result
 
     def get_str(self, key: str) -> str:
-        '''Gets a string'''
-        return self.get(key, lambda x: x.decode('utf-8'))
+        """
+        Get the value of a string key from the Redis server and convert it to a string.
+        """
+        result = self.get(key, fn=str)
+        return result
 
     def get_int(self, key: str) -> int:
-        '''Gets an integer'''
-        return self.get(key, lambda x: int(x))
+        """
+        Get the value of a string key from the Redis server and convert it to an integer.
+        """
+        result = self.get(key, fn=int)
+        return result
