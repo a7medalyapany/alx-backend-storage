@@ -9,10 +9,10 @@ class Cache:
     Cache class to store data in Redis
     '''
 
-    def __init__(self) -> None:
+    def __init__(self, host='localhost', port='5332', db=0) -> None:
         '''Initialize the Cache class with Redis client'''
-        self._redis = redis.Redis()
-        self._redis.flushdb(True)
+        self._redis = redis.Redis(host=host, port=port, db=db)
+        self._redis.flushdb()
 
     @call_history
     @count_calls
